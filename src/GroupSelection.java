@@ -258,8 +258,7 @@ public class GroupSelection extends javax.swing.JFrame {
     private void selectGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectGroupActionPerformed
         // TODO add your handling code here:
         //GroupNo.getText();
-        AlphaGUI ag = new AlphaGUI();
-        ag.setMySQL(my);
+        AlphaGUI ag = new AlphaGUI(my);
         ag.setVisible(true);
     }//GEN-LAST:event_selectGroupActionPerformed
 
