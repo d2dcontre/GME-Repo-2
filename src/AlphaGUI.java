@@ -4,12 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Scanner;
-import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -33,8 +30,6 @@ public class AlphaGUI extends JFrame {
     public JLabel dailySchedLabel;
     private JTable thisCalendar;
     private JButton thisEditButton;
-    public FileReader read;
-    public Scanner in;
     public PrintWriter pr;
     private JPanel thisPanel1;
     private JPanel thisPanel2;
@@ -60,9 +55,6 @@ public class AlphaGUI extends JFrame {
     private JButton btnPreviousMonth;
     private String[] classSched;
     
-    /**
-     * Launch the application.
-     */
     //<editor-fold defaultstate="collapsed" desc="void main">
     /*public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -77,6 +69,34 @@ public class AlphaGUI extends JFrame {
         });
     }*/
     //</editor-fold>
+    
+    // Constructs the Calendar GUI
+    public AlphaGUI(MySQL my) {
+        this.my = my;
+        
+        classSched = my.dailyQuery(Runner.idNo);
+        
+        createCalendar();
+        
+        rowCountAdd = 0;
+        sql = new AlphaSQL("pawnshop");
+        
+        modifyFrame();
+
+        final JTabbedPane MainTabs = new JTabbedPane(JTabbedPane.TOP);
+        MainTabs.setFont(new Font("Calibri", MainTabs.getFont().getStyle(), MainTabs.getFont().getSize()));
+        MainTabs.setBounds(0, 0, 781, 564);
+        contentPane.add(MainTabs);
+        
+        // Builds daily schedule
+        buildDaily(MainTabs);
+
+        // Builds month calendar display
+        buildCalendar(MainTabs);
+        
+        // Builds edit screen
+        buildEdit();
+    }
 
     // Sets up calendar-related things
     public void createCalendar() {
@@ -214,7 +234,7 @@ public class AlphaGUI extends JFrame {
         Appraisal.add(dailySchedLabel);
 
         // Populating the Table
-        popDaily(dailySchedTable,in);
+        popDaily(dailySchedTable);
         
         // Add saving functionality
         JButton dailySchedSave = new JButton("Save Changes\r\n");
@@ -224,28 +244,6 @@ public class AlphaGUI extends JFrame {
             {
                 // Updating the DB
                 editDaily(dailySchedTable, pr);
-                /*String input = searchFieldA.getText();
-                String choice = ChoiceBoxA.getSelectedItem().toString();
-                System.out.println( input + " " + choice);
-                TableFiller fill = sql.setTableAppraisal(choice,input);
-                if(choice == "Description")
-                {
-                        SearchResultTitleA.setText("Search Result For " + input);
-                }
-                else
-                {
-                        SearchResultTitleA.setText("Search Result For " + input + " Risk Level");
-                }
-                if(fill != null)
-                {
-                    ResultTableA.setModel(fill);
-                    ResultTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-                    ResultTableA.getColumnModel().getColumn(0).setHeaderValue("Item #");
-                    ResultTableA.getColumnModel().getColumn(1).setHeaderValue("Category");
-                    ResultTableA.getColumnModel().getColumn(2).setHeaderValue("Description");
-                    ResultTableA.getColumnModel().getColumn(3).setHeaderValue("Risk Level");
-                    ResultTableA.getColumnModel().getColumn(4).setHeaderValue("Amount");
-                } */
             }
         });
         dailySchedSave.setFont(new Font("Calibri", Font.PLAIN, 11));
@@ -253,46 +251,24 @@ public class AlphaGUI extends JFrame {
         Appraisal.add(dailySchedSave);
     }
     
-    public AlphaGUI(MySQL my) {
-        this.my = my;
-        
-        classSched = my.dailyQuery(Runner.idNo);
-        
-        createCalendar();
-        
-        try {
-            read = new FileReader("FT.txt");
-            System.out.print("success2");	
-            in = new Scanner(read);
-            System.out.print("success");		
-        } catch(Exception e) {	
-            System.out.print("ERROR");		
-        }
-        
-        rowCountAdd = 0;
-        sql = new AlphaSQL("pawnshop");
-        
-        modifyFrame();
-
-        final JTabbedPane MainTabs = new JTabbedPane(JTabbedPane.TOP);
-        MainTabs.setFont(new Font("Calibri", MainTabs.getFont().getStyle(), MainTabs.getFont().getSize()));
-        MainTabs.setBounds(0, 0, 781, 564);
-        contentPane.add(MainTabs);
-        
-        buildDaily(MainTabs);
-
+    // Builds the calendar tab
+    public void buildCalendar(JTabbedPane MainTabs) {
+        // Build Tab
         thisMonth = new JPanel(new CardLayout(0,0)); //tab for This Month with a card layout
         MainTabs.addTab("Calendar\r\n", null, thisMonth, null);
         MainTabs.setEnabledAt(1, true);
-
+        
+        // Build panel to be placed in tab
         thisPanel1 = new JPanel();											//first panel for card layout
         thisMonth.add(thisPanel1);
         thisPanel1.setLayout(null);
-
+        
+        // Add a scroll pane to the panel
         JScrollPane thisCalendarScroll = new JScrollPane();
         thisCalendarScroll.setBounds(101, 5, 452, 266);
         thisPanel1.add(thisCalendarScroll);
-
+        
+        // Builds the calendar that shows the days in a month
         thisCalendar = new JTable();										//calendar for the current month
         thisCalendarScroll.setViewportView(thisCalendar);
         thisCalendar.setColumnSelectionAllowed(true);
@@ -319,28 +295,33 @@ public class AlphaGUI extends JFrame {
         thisCalendar.getColumnModel().getColumn(6).setPreferredWidth(150);
         calendarPopulation(neo,thisCalendar);
         thisCalendar.setRowHeight(40);
-
-        thisEditButton = new JButton("Edit");								//button for going to the 2nd panel of the card layout w/editing available
+        
+        // Adds an edit button that will allow the user to edit a day's schedule
+        thisEditButton = new JButton("Edit"); //button for going to the 2nd panel of the card layout w/editing available
         thisEditButton.setBounds(563, 207, 89, 23);
         thisPanel1.add(thisEditButton);
-
+        
+        // Adds a check button to display the schedule for the day without editing
         JButton thisCheckButton = new JButton("Check");
         thisCheckButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn()) != null) {
-                    int day = (Integer)thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn());
-                    filename = (month + " " + day +".txt");
-                    popCalendSched(thisCheckTable,in,filename,thisCalendar.getSelectedColumn());
+                    //int day = (Integer)thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn());
+                    //filename = (month + " " + day +".txt");
+                    //popCalendSched(thisCheckTable,in,filename,thisCalendar.getSelectedColumn());
+                    popCalendSched(thisCheckTable,thisCalendar.getSelectedColumn() );
                 }
             }
         });
         thisCheckButton.setBounds(563, 247, 89, 23);
         thisPanel1.add(thisCheckButton);
-
+        
+        // Adds a second scrollpane to hold the check table for the events in a day
         JScrollPane scrollPane_1 = new JScrollPane();
         scrollPane_1.setBounds(104, 307, 449, 218);
         thisPanel1.add(scrollPane_1);
-
+        
+        // Creates the check table
         thisCheckTable = new JTable();
         scrollPane_1.setViewportView(thisCheckTable);
         thisCheckTable.setModel(new DefaultTableModel(
@@ -379,9 +360,9 @@ public class AlphaGUI extends JFrame {
             }
         ));
         
+        // Creates a button that allows you to change months +1
         nextMonth = new JButton("Next Month");
         nextMonth.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 thisLabel.setText(setTitle(neo,1) );
@@ -390,9 +371,9 @@ public class AlphaGUI extends JFrame {
         nextMonth.setBounds(563,60,89,23);
         thisPanel1.add(nextMonth);
         
+        // Creates a button that allows you to change months -1
         btnPreviousMonth = new JButton("Previous Month");
         btnPreviousMonth.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 thisLabel.setText(setTitle(neo,-1) );
@@ -401,14 +382,19 @@ public class AlphaGUI extends JFrame {
         btnPreviousMonth.setBounds(563,100,118,23);
         thisPanel1.add(btnPreviousMonth);
         
+        // Adds a new label that displays the month and the year of the current table
         thisLabel = new JLabel("");
         thisLabel.setBounds(563, 12, 118, 23);
         thisPanel1.add(thisLabel);
         thisLabel.setText(month + " " + year);
         
+        // Adds the listener to the edit button that triggers the edit screen
         thisEditButton.addActionListener(new editAction());
-
-        thisPanel2 = new JPanel();											//2nd panel of the card layout; responsible for getting the status of the date selected in the calendar
+    }
+    
+    // Builds edit screen
+    public void buildEdit() {
+        thisPanel2 = new JPanel(); //2nd panel of the card layout; responsible for getting the status of the date selected in the calendar
         thisPanel2.setLayout(null);
         thisMonth.add(thisPanel2);
 
@@ -488,99 +474,6 @@ public class AlphaGUI extends JFrame {
         });
         thisRetBtn.setBounds(549, 443, 170, 28);
         thisPanel2.add(thisRetBtn);
-        //thisMonth.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{thisPanel1, thisPanel2}));	
-        //<editor-fold defaultstate="collapsed" desc="comment">
-        /*JPanel nextMonth = new JPanel();
-         * MainTabs.addTab("Next Month", null, nextMonth, null);
-         * neo.add(neo.MONTH,1);
-         * nextMonth.setLayout(new CardLayout(0, 0));
-         * neo.getInstance();
-         *
-         * JPanel nextPanel1 = new JPanel();
-         * nextMonth.add(nextPanel1);
-         *
-         * JScrollPane nextCalendarScroll = new JScrollPane();
-         * nextPanel1.add(nextCalendarScroll);
-         *
-         * nextCalendarTable = new JTable();
-         * nextCalendarTable.setModel(new DefaultTableModel(
-         * new Object[][] {
-         * {null, null, null, null, null, null, null},
-         * {null, null, null, null, null, null, null},
-         * {null, null, null, null, null, null, null},
-         * {null, null, null, null, null, null, null},
-         * {null, null, null, null, null, null, null},
-         * {null, null, null, null, null, null, null},
-         * },
-         * new String[] {
-         * "Sunday", "Monday", "Tuseday", "Wednesday", "Thursday", "Friday", "Saturday"
-         * }
-         * ));
-         * calendarPopulation(neo,nextCalendarTable);
-         * nextCalendarScroll.setViewportView(nextCalendarTable);
-         * nextCalendarTable.setRowHeight(40);
-         * nextCalendarTable.setColumnSelectionAllowed(true);
-         * nextCalendarTable.setCellSelectionEnabled(true);
-         *
-         * nextEditButton = new JButton("Edit");
-         * nextPanel1.add(nextEditButton);
-         *
-         * nextCheckButton = new JButton("Check");
-         * nextPanel1.add(nextCheckButton);
-         *
-         * nextPanel2 = new JPanel();
-         * nextPanel2.setLayout(null);
-         * nextMonth.add(nextPanel2, "name_1618371576471");
-         *
-         * nextDate = new JLabel("DATE:");
-         * nextDate.setBounds(0, 0, 333, 14);
-         * nextPanel2.add(nextDate);
-         *
-         * nextSave = new JButton("Save Changes\r\n");
-         * nextSave.setFont(new Font("Calibri", Font.PLAIN, 11));
-         * nextSave.setEnabled(false);
-         * nextSave.setBounds(291, 469, 170, 28);
-         * nextPanel2.add(nextSave);
-         *
-         * scrollPane_2 = new JScrollPane();
-         * scrollPane_2.setBounds(213, 11, 427, 302);
-         * nextPanel2.add(scrollPane_2);
-         *
-         * nextSchedTable = new JTable();
-         * nextSchedTable.setModel(new DefaultTableModel(
-         * new Object[][] {
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * {null, null},
-         * },
-         * new String[] {
-         * "Times", "Status"
-         * }
-         * ));*/
-        //</editor-fold>
         
         JButton setAppoint = new JButton("Set Appointment");
         setAppoint.addActionListener(new ActionListener() {
@@ -631,24 +524,10 @@ public class AlphaGUI extends JFrame {
         });
         thisFreeBtn.setBounds(549, 374, 170, 28);
         thisPanel2.add(thisFreeBtn);
-        /*scrollPane_2.setViewportView(nextSchedTable);
-         * nextSchedTable.setFillsViewportHeight(true);
-         * 
-         * nextFree = new JLabel("The Free times are:");
-         * nextFree.setVerticalAlignment(SwingConstants.TOP);
-         * nextFree.setBounds(30, 357, 681, 91);
-         * nextPanel2.add(nextFree);
-         * nextCheckButton.addActionListener(new ActionListener() {
-         * public void actionPerformed(ActionEvent arg0) {
-         * }
-         * });
-         * nextEditButton.addActionListener(new ActionListener() {
-         * public void actionPerformed(ActionEvent e) {
-         * }
-         * });*/
     }
-	
-    public void getMin(Scanner scan,JLabel label) {
+    
+    //<editor-fold defaultstate="collapsed" desc="getMin(Scanner scan, JLabel label)">
+    /*public void getMin(Scanner scan,JLabel label) {
         String init = label.getText();
         int min=100;
         while(scan.hasNextLine()) {
@@ -678,9 +557,10 @@ public class AlphaGUI extends JFrame {
             }
         }
         System.out.print("got here");
-    }
+    }*/
+    //</editor-fold>
 	
-    //populates the Calendar
+    // Populates the Calendar
     public void calendarPopulation(Calendar cal, JTable tabel) {
         cal.set(cal.DATE, 1);
         int dayz = cal.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
@@ -694,15 +574,7 @@ public class AlphaGUI extends JFrame {
         Calendar.getInstance();
     }
 
-    private class SwingAction extends AbstractAction {
-        public SwingAction() {
-            putValue(NAME, "SwingAction");
-            putValue(SHORT_DESCRIPTION, "Some short description");
-        }
-        public void actionPerformed(ActionEvent e) {
-        }
-    }
-
+    // Handles actions triggered by clicking the edit button
     private class editAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn()) != null)
@@ -712,7 +584,8 @@ public class AlphaGUI extends JFrame {
                 sample.next(thisMonth);
                 thisDate.setText("DATE: "  + month + " " + day);
                 filename = (month + " " + day +".txt");
-                popCalendSched(thisSchedTable,in,filename,thisCalendar.getSelectedColumn());
+                //popCalendSched(thisSchedTable,in,filename,thisCalendar.getSelectedColumn());
+                popCalendSched(thisSchedTable,thisCalendar.getSelectedColumn() );
             }
         }
     }
@@ -747,7 +620,7 @@ public class AlphaGUI extends JFrame {
     }
 	
     //populates the dailySched with the times in the text file
-    public void popDaily(JTable table, Scanner scan) {
+    public void popDaily(JTable table) {
         //String[] dailyClasses = my.
         if(classSched != null) {
             for(int i = 0; i < classSched.length; i++) {
@@ -815,7 +688,13 @@ public class AlphaGUI extends JFrame {
     }
 
     //populates the Schedule of the Selected day on the Calendar
-    public void popCalendSched(JTable table, Scanner scan, String filename,int date) {
+    public void popCalendSched(JTable table, int day) {
+        for(int i = 0; i < 28; i++) {
+            table.setValueAt(dailySchedTable.getValueAt(i,day+1),i,1);
+        }
+    }
+    //<editor-fold defaultstate="collapsed" desc="Old popCalendSched method">
+    /*public void popCalendSched(JTable table, Scanner scan, String filename,int date) {
         try {
             in = new Scanner(new FileReader(filename) ); // Load file
             for(int i = 0; i < 28; i++) 
@@ -833,7 +712,8 @@ public class AlphaGUI extends JFrame {
             System.out.println("Exception");
             e.printStackTrace();
         }
-    }
+    }*/
+    //</editor-fold>
 
     //sets an Appointment with the name inputted on the text field, and the time selected with the combo box
     public void setAppointment(JTable table, JComboBox start, JComboBox end, JTextField event) {

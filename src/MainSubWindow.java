@@ -70,7 +70,9 @@ public class MainSubWindow {
             public void actionPerformed(ActionEvent e) {
                 //throw new UnsupportedOperationException("Not supported yet.");
                 out.println("triggered join final");
-                if(!iDEntry.getText().equals("") ) {
+                //if(!iDEntry.getText().equals("") ) {
+                String idTF = iDEntry.getText();
+                if(idTF.equals("0") || StartGUI.regExCheck(idTF, "(^[1-9]^|^[1-9][0-9]+)") ) {
                     out.println("definitely something there: " + iDEntry.getText() );
                     String collect = iDEntry.getText();
                     try {
@@ -82,9 +84,15 @@ public class MainSubWindow {
                             GroupSelection.GroupChange = true;
                             gs.groupChanged();
                         }
+                        else {
+                            StartGUI.showMessage("Couln't find the group!\nAre you sure it's the right Group ID?");
+                        }
                     } catch(Exception ex) {
                         ex.printStackTrace();
                     }
+                }
+                else {
+                    StartGUI.showMessage("Must be a valid non-negative\ninteger with no leading zeroes.");
                 }
             }
         });

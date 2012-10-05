@@ -353,7 +353,7 @@ public class StartGUI {
     }
     
     // method used to check validity
-    public boolean regExCheck(String s, String regex) {
+    public static boolean regExCheck(String s, String regex) {
         boolean found = false;
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(s);
