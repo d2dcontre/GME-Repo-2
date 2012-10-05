@@ -19,6 +19,8 @@ public class GroupSelection extends javax.swing.JFrame {
     private String[] selectMembers;
     public static int GroupAdded = -1;
     public static boolean GroupChange = false;
+    private boolean selected = false;
+    public static int groupSelected;
     
     /**
      * Creates new form GroupSelection
@@ -84,12 +86,12 @@ public class GroupSelection extends javax.swing.JFrame {
             JList j = (JList) e.getSource();
             int selectedRow = j.getSelectedIndex();
             int query = Runner.groupIDs[selectedRow];
-            /*String[] members*/ selectMembers = my.memberQuery(query);
+            groupSelected = query;
+            selectMembers = my.memberQuery(query);
             if(selectMembers != null) {
                 System.out.println("Starting refresh of member list");
                 GroupName.setText(Runner.groupNames[selectedRow]);
                 GroupNo.setText(""+Runner.groupIDs[selectedRow]);
-                //groupMemberList = new javax.swing.JList();
                 groupMemberList.setModel(new javax.swing.AbstractListModel() {
                     String[] strings = selectMembers;//String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
                     public int getSize() {
@@ -105,15 +107,14 @@ public class GroupSelection extends javax.swing.JFrame {
                         return "No Members";
                     }
                 });
+                selected = true;
                 jScrollPane1.validate();
             }
+            else {
+                selected = false;
+            }
         }
-        /*Object o = j.getModel().getElementAt(selectedRow);
-        String selectedItem = o.toString();
-        System.out.println("Selected from " + e.getFirstIndex() + " to " + e.getLastIndex());
-        System.out.println("Selected Row: " + selectedItem);*/
-    }
-    );
+    } );
     jScrollPane1.setViewportView(groupList);
 
     groupMemberList.setModel(new javax.swing.AbstractListModel() {
@@ -258,8 +259,13 @@ public class GroupSelection extends javax.swing.JFrame {
     private void selectGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectGroupActionPerformed
         // TODO add your handling code here:
         //GroupNo.getText();
-        AlphaGUI ag = new AlphaGUI(my);
-        ag.setVisible(true);
+        if(selected) {
+            AlphaGUI ag = new AlphaGUI(my);
+            ag.setVisible(true);
+        }
+        else {
+            StartGUI.showMessage("Select a Group First!");
+        }
     }//GEN-LAST:event_selectGroupActionPerformed
 
     private void createGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createGroupActionPerformed
@@ -278,15 +284,15 @@ public class GroupSelection extends javax.swing.JFrame {
                 String[] strings = Runner.groupNames;//String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
                 public int getSize() {
                     if(strings != null)
-                    return strings.length;
+                        return strings.length;
                     else
-                    return 1;
+                        return 1;
                 }
                 public Object getElementAt(int i) {
                     if(strings != null)
-                    return strings[i];
+                        return strings[i];
                     else
-                    return "No groups joined";
+                        return "No groups joined";
                 }
             });
             ListSelectionModel ls = groupList.getSelectionModel();

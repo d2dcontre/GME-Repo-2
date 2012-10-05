@@ -29,13 +29,43 @@ create table GroupPerson(
 	foreign key (GroupID) references GroupData(GroupID)
 );
 
-create table UserCal(
+/*create table UserCal(
 	eventID int not null primary key auto_increment,
 	eventTime int not null,
 	eventName varchar(255),
 	UserID int not null,
 	foreign key (UserID) references UserData(id)
+);*/
+create table UserSched(
+	classID int not null primary key auto_increment,
+	classStart int,
+	classEnd int,
+	className varchar(255),
+	dayOfWeek varchar(255),
+	UserID int not null,
+	foreign key (UserID) references UserData(id)
 );
+SELECT classStart, classEnd, className, dayOfWeek FROM UserSched where UserID = 102485;
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (5,6,"TH131","1 3 5",102485);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (13,14,"MIS181.8","1 3 5",102485);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (15,18,"CS152","1 3 5",102485);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (7,9,"PH101","2 4",102485);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (13,15,"TH131","2 4",102485);
+
+
+insert into IdData(id,name)
+values (102485,'Jonathan Matias');
+insert into IdData(id,name)
+values (100651,'Kristian Calalang');
+insert into IdData(id,name)
+values (102269,'Rall Llobrera');
+insert into IdData(id,name)
+values (100100,'Ban Ki Moon');
 
 insert into UserData(id,user,pass,email,mobnum,homenum,address)
 values (102485, 'd2dcontre','d2dcontre','jon.matias@outlook.com',
@@ -58,15 +88,8 @@ insert into GroupPerson(UserID,GroupID) values (100651,2);
 insert into GroupPerson(UserID,GroupID) values (102269,2);
 insert into GroupPerson(UserID,GroupID) values (102269,3);
 
-insert into IdData(id,name)
-values (102485,'Jonathan Matias');
-insert into IdData(id,name)
-values (100651,'Kristian Calalang');
-insert into IdData(id,name)
-values (102269,'Rall Llobrera');
+/**/
 
-insert into IdData(id,name)
-values (100100,'Ban Ki Moon');
 #delete from IdData where id = 100100;
 #delete from UserData where id = 100100;
 #delete from groupperson where userid = 100100;

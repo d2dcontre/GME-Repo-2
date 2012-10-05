@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.Scanner;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
@@ -59,6 +58,7 @@ public class AlphaGUI extends JFrame {
     private JLabel thisLabel;
     private JButton nextMonth;
     private JButton btnPreviousMonth;
+    private String[] classSched;
     
     /**
      * Launch the application.
@@ -255,6 +255,9 @@ public class AlphaGUI extends JFrame {
     
     public AlphaGUI(MySQL my) {
         this.my = my;
+        
+        classSched = my.dailyQuery(Runner.idNo);
+        
         createCalendar();
         
         try {
@@ -746,6 +749,28 @@ public class AlphaGUI extends JFrame {
     //populates the dailySched with the times in the text file
     public void popDaily(JTable table, Scanner scan) {
         //String[] dailyClasses = my.
+        if(classSched != null) {
+            for(int i = 0; i < classSched.length; i++) {
+                String[] temp = classSched[i].split(" ");
+                for(int k = 0; k < temp.length; k++) {
+                    System.out.print(temp[k] + " ");
+                }
+                System.out.println();
+                int begin = Integer.parseInt(temp[0] );
+                int end = Integer.parseInt(temp[1] );
+                System.out.println("begin: " + begin + ", end: " + end);
+                String name = temp[2];
+                int days = temp.length - 3;
+                for(int j = 0; j < days; j++) {
+                    int day = Integer.parseInt(temp[j+3] ) + 1;
+                    System.out.println("Day: " + day);
+                    for(int k = begin; k <= end; k++) {
+                        dailySchedTable.setValueAt(name, k, day);
+                    }
+                }
+            }
+        }
+        
         //<editor-fold defaultstate="collapsed" desc="Old Println Style">
         /*try {
          * Scanner reading = new Scanner(new FileReader("Daily Schedule.txt") ); // Load file

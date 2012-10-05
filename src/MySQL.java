@@ -294,6 +294,31 @@ public class MySQL {
         return ret;
     }
     
+    public String[] dailyQuery(int id) {
+        String arr[] = null; // Int-start Int-end String-name daysOfWeek{"1 3 5"}
+        String query = "SELECT classStart, classEnd, className, dayOfWeek FROM UserSched WHERE UserID = ?";
+        String temp[] = {""+id};
+        prepare(temp, query, true);
+        try {
+            int rowCount = getRowCount(rs);
+            out.println("DQ rowCount: " + rowCount);
+            if (rowCount > 0) {
+                arr = new String[rowCount];
+                rs.next();
+                for(int j = 0; j < rowCount; j++) {
+                    arr[j] = rs.getInt(1) + " " + rs.getInt(2) + " "
+                            + rs.getString(3) + " " + rs.getString(4);
+                    out.println(arr[j] );
+                    rs.next();
+                }
+            } else {
+            }
+        } catch (SQLException sQLException) {
+            sQLException.printStackTrace();
+        }
+        return arr;
+    }
+    
     public String[][] calendarDSQuery(int member) {
         String[][] arr = null;
         try {
