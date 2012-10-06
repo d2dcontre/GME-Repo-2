@@ -72,6 +72,7 @@ values (102269, 'rallo','rallo','rall@gmail.com','09219664091',
 insert into GroupData(GroupName) values ("The Pretenders");
 insert into GroupData(GroupName) values ("Fast Five");
 insert into GroupData(GroupName) values ("The Wildmen");
+insert into GroupData(GroupName) values ("Last Chance");
 
 insert into GroupPerson(UserID,GroupID) values (102485,1); #pretenders
 insert into GroupPerson(UserID,GroupID) values (100651,1); #pretenders
@@ -128,6 +129,6 @@ drop table GroupData;
 drop table userdata;*/
 #drop table userCal;
 
-SELECT dayOfMon, month, year, timeBlock, free 
+/*SELECT dayOfMon, month, year, timeBlock, free 
 FROM EventData 
-WHERE UserID = 100651 AND month = 9 AND dayOfMon = 21 AND year = 2012 ORDER BY timeBlock;
+WHERE UserID = 100651 AND month = 9 AND dayOfMon = 21 AND year = 2012 ORDER BY timeBlock;*/

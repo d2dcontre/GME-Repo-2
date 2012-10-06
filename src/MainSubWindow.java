@@ -68,31 +68,31 @@ public class MainSubWindow {
         join.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //throw new UnsupportedOperationException("Not supported yet.");
                 out.println("triggered join final");
-                //if(!iDEntry.getText().equals("") ) {
                 String idTF = iDEntry.getText();
-                if(idTF.equals("0") || StartGUI.regExCheck(idTF, "(^[1-9]^|^[1-9][0-9]+)") ) {
-                    out.println("definitely something there: " + iDEntry.getText() );
-                    String collect = iDEntry.getText();
-                    try {
-                        /*GroupSelection.GroupAdded*/ TransferStuff ts = my.joinGroup(Runner.idNo,Integer.parseInt(collect) );
-                        //System.out.println("GroupAdded: " + GroupSelection.GroupAdded);
-                        if(ts != null) {
-                            Runner.groupNames = ts.groupName;
-                            Runner.groupIDs = ts.groupID;
-                            GroupSelection.GroupChange = true;
-                            gs.groupChanged();
+                if (!my.joinCheck(idTF, ""+Runner.idNo) ) {
+                    if (idTF.equals("0") || StartGUI.regExCheck(idTF, "(^[1-9][0-9]*)")) {
+                        out.println("definitely something there: " + iDEntry.getText());
+                        String collect = iDEntry.getText();
+                        try {
+                            TransferStuff ts = my.joinGroup(Runner.idNo, Integer.parseInt(collect));
+                            if (ts != null) {
+                                Runner.groupNames = ts.groupName;
+                                Runner.groupIDs = ts.groupID;
+                                GroupSelection.GroupChange = true;
+                                gs.groupChanged();
+                            } else {
+                                StartGUI.showMessage("Couln't find the group!\nAre you sure it's the right Group ID?");
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                        else {
-                            StartGUI.showMessage("Couln't find the group!\nAre you sure it's the right Group ID?");
-                        }
-                    } catch(Exception ex) {
-                        ex.printStackTrace();
+                    } else {
+                        StartGUI.showMessage("Must be a valid non-negative\ninteger with no leading zeroes.");
                     }
                 }
                 else {
-                    StartGUI.showMessage("Must be a valid non-negative\ninteger with no leading zeroes.");
+                    StartGUI.showMessage("You have already joined that group.");
                 }
             }
         });

@@ -264,8 +264,10 @@ public class StartGUI {
                 String a = dtrpnBLB.getText(); // Grabs address
                 boolean aCheck = regExCheck(a, ".+"); // checks that address has at least one letter
                 
+                boolean taken = my.registerCheck(u);
+                
                 if(retrieved) { // Will only trigger if a valid student is retrieved by the retrieve button
-                    if(uCheck && pCheck && emCheck && mCheck && hCheck && aCheck) { // checks for errors
+                    if(uCheck && pCheck && emCheck && mCheck && hCheck && aCheck && !taken) { // checks for errors
                         int execUp = my.registerExecute(id, u, p, em, m, h, a); // Executes update
                         if(execUp > 0) { // Checks if any lines have been updated
                             JOptionPane.showMessageDialog(null, "Thank you for registering!\nPlease login using your new User Name and Password!", "Success!", JOptionPane.INFORMATION_MESSAGE);
@@ -291,7 +293,9 @@ public class StartGUI {
                         if(!hCheck)
                             mess = mess + "Home phone must be 7 digits long;\n";
                         if(!aCheck)
-                            mess = mess + "Address must not be empty.";
+                            mess = mess + "Address must not be empty;\n";
+                        if(taken)
+                            mess = mess + "Your username is taken.";
                         if(mess.lastIndexOf(";\n") == mess.length() - 2)
                             mess = mess.substring(0,mess.lastIndexOf(";\n") ) + ".";
                         showMessage(mess);

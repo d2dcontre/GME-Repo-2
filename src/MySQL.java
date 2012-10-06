@@ -148,6 +148,22 @@ public class MySQL {
         return ret;
     }
     
+    // Checks if a username already exists
+    public boolean registerCheck(String username) {
+        boolean check = false;
+        String query = "SELECT user FROM UserData WHERE user = ?";
+        String[] arr = {username};
+        try {
+            prepare(arr, query, true);
+            if(rs.next() ) {
+                check = true;
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return check;
+    }
+    
     // SOURCE: http://www.coderanch.com/t/303346/JDBC/databases/find-number-rows-resultset
     public static int getRowCount(ResultSet set) {
         int rowCount = 1;
@@ -234,6 +250,20 @@ public class MySQL {
         }
         microClose();
         return ts;
+    }
+    
+    public boolean joinCheck(String gid, String userid) {
+        boolean check = false;
+        String query = "SELECT GroupID FROM GroupPerson WHERE GroupID = ? AND UserID = ?";
+        String[] arr = {gid,userid};
+        try {
+            prepare(arr, query, true);
+            if(rs.next() )
+                check = true;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return check;
     }
     
     // creates a group and connects the user to the group
