@@ -404,6 +404,7 @@ public class MySQL {
                         else
                             ret[i][j-1] = rs.getString(j);
                     }
+                    rs.next();
                 }
             }
         } catch(Exception e) {
@@ -421,5 +422,17 @@ public class MySQL {
         String arr[] = {""+dayOfMon,""+month,""+year,name,""+timeStart,""+noBlocks,""+GroupID};
         prepare(arr, update, false);
         return rowRet;
+    }
+    
+    public void markBusyFree(int day, int month, int year, int block, boolean free, int userid) {
+        String update = "INSERT INTO EventData(dayOfMon,month,year,timeBlock,free,UserID) "
+                + "VALUES(?, ?, ?, ?, ?, ?)";
+        int freeC = -1;
+        if(free)
+            freeC = 1;
+        else
+            freeC = 0;
+        String arr[] = {""+day,""+month,""+year,""+block,""+freeC,""+userid};
+        prepare(arr, update, false);
     }
 }

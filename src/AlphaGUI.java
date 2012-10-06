@@ -254,7 +254,7 @@ public class AlphaGUI extends JFrame {
         });
         dailySchedSave.setFont(new Font("Calibri", Font.PLAIN, 11));
         dailySchedSave.setBounds(302, 485, 170, 28);
-        Appraisal.add(dailySchedSave);
+        //Appraisal.add(dailySchedSave);
     }
     
     // Builds the calendar tab
@@ -479,7 +479,7 @@ public class AlphaGUI extends JFrame {
         thisFree = new JLabel("The Free times are:");
         thisFree.setVerticalAlignment(SwingConstants.TOP);
         thisFree.setBounds(40, 170, 111, 91);
-        thisPanel2.add(thisFree);
+        //thisPanel2.add(thisFree);
 		
         JButton thisRetBtn = new JButton("Return\r\n");
         thisRetBtn.addActionListener(new ActionListener() {
@@ -606,22 +606,30 @@ public class AlphaGUI extends JFrame {
     // Handles actions triggered by clicking the edit button
     private class editAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
-                thisCalendar.getSelectedColumn()) != null)
-            {
-                int day = (Integer)thisCalendar.getValueAt(
-                    thisCalendar.getSelectedRow(),
-                    thisCalendar.getSelectedColumn()
-                );
-                sample = (CardLayout) thisMonth.getLayout();
-                sample.next(thisMonth);
-                thisDate.setText("DATE: "  + month + " " + day);
-                filename = (month + " " + day +".txt");
-                popCalendSched(thisSchedTable,thisCalendar.getSelectedColumn());
+            int selectRow = thisCalendar.getSelectedRow();
+            int selectColumn = thisCalendar.getSelectedColumn();
+            if (selectRow > -1 && selectColumn > -1) {
+                if(thisCalendar.getValueAt(selectRow, selectColumn) != null)
+                {
+                    int day = (Integer)thisCalendar.getValueAt(
+                        thisCalendar.getSelectedRow(),
+                        thisCalendar.getSelectedColumn()
+                    );
+                    sample = (CardLayout) thisMonth.getLayout();
+                    sample.next(thisMonth);
+                    thisDate.setText("DATE: "  + month + " " + day);
+                    filename = (month + " " + day +".txt");
+                    popCalendSched(thisSchedTable,thisCalendar.getSelectedColumn());
+                }
+                else {
+                    StartGUI.showMessage("Please select a valid (with a number) day!");
+                }
+            } else {
+                StartGUI.showMessage("Please select a day!");
             }
         }
     }
-
+    
     // saves the changes in the daily Sched
     public void editDaily(JTable table,PrintWriter print) {
         try
@@ -724,6 +732,7 @@ public class AlphaGUI extends JFrame {
                 int run = Integer.parseInt(appDay[i][5] );
                 System.out.println("run: " + run);
                 for(int j = 0; j < run; j++) {
+                    System.out.println("appDay: " + appDay[i][4]);
                     table.setValueAt(appDay[i][3], Integer.parseInt(appDay[i][4] )+j, 1);
                 }
             }
@@ -772,6 +781,8 @@ public class AlphaGUI extends JFrame {
         for(int i = 0; i < index.length;i++)
         {
             table.setValueAt("Busy",index[i],1);
+            my.markBusyFree( ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+            thisCalendar.getSelectedColumn() ) ).intValue(), neo.get(neo.MONTH), neo.get(neo.YEAR), index[i], false, Runner.idNo);
         }
     }
 
@@ -780,7 +791,9 @@ public class AlphaGUI extends JFrame {
         int[]index = table.getSelectedRows();
         for(int i = 0; i < index.length;i++)
         {
-                table.setValueAt("Free",index[i],1);
+            table.setValueAt("Free",index[i],1);
+            my.markBusyFree( ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+            thisCalendar.getSelectedColumn() ) ).intValue(), neo.get(neo.MONTH), neo.get(neo.YEAR), index[i], true, Runner.idNo);
         }
     }
     
