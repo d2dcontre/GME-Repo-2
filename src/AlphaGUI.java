@@ -152,7 +152,7 @@ public class AlphaGUI extends JFrame {
     
     // Handles content additions to the main frame
     public void modifyFrame() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setBounds(100, 100, 797, 602);
         
         contentPane = new JPanel();
@@ -324,7 +324,7 @@ public class AlphaGUI extends JFrame {
                         StartGUI.showMessage("Please select a valid (with a number) day!");
                     }
                 } else {
-                    StartGUI.showMessage("Please select an day!");
+                    StartGUI.showMessage("Please select a day!");
                 }
             }
         });
