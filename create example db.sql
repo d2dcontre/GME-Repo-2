@@ -127,3 +127,7 @@ drop table GroupPerson;
 drop table GroupData;
 drop table userdata;*/
 #drop table userCal;
+
+SELECT dayOfMon, month, year, timeBlock, free 
+FROM EventData 
+WHERE UserID = 100651 AND month = 9 AND dayOfMon = 21 AND year = 2012 ORDER BY timeBlock;

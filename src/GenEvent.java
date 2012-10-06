@@ -44,7 +44,7 @@ public class GenEvent {
                 
                 if(h.get(day+" "+month+" "+time) == null) {
                     out.println("INSERT INTO EventData(dayOfMon,month,year,timeBlock,free,UserID)"
-                        + " VALUES(" + day + "," + month + "," + 2012 + "," + time + "," + free + "," + 100651 + ")");
+                        + " VALUES(" + day + "," + month + "," + 2012 + "," + time + "," + free + "," + 100651 + ");");
                     h.put("day+\" \"+month+\" \"+time", new Boolean(free) );
                 }
             }

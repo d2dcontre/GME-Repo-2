@@ -54,6 +54,7 @@ public class AlphaGUI extends JFrame {
     private JButton nextMonth;
     private JButton btnPreviousMonth;
     private String[] classSched;
+    private String[][] eventDay;
     
     //<editor-fold defaultstate="collapsed" desc="void main">
     /*public static void main(String[] args) {
@@ -311,9 +312,17 @@ public class AlphaGUI extends JFrame {
         JButton thisCheckButton = new JButton("Check");
         thisCheckButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
-                        thisCalendar.getSelectedColumn()) != null) {
-                    popCalendSched(thisCheckTable,thisCalendar.getSelectedColumn() );
+                int selectRow = thisCalendar.getSelectedRow();
+                int selectColumn = thisCalendar.getSelectedColumn();
+                if (selectRow > -1 && selectColumn > -1) {
+                    if (thisCalendar.getValueAt(selectRow, selectColumn) != null) {
+                        popCalendSched(thisCheckTable, thisCalendar.getSelectedColumn());
+                    }
+                    else {
+                        StartGUI.showMessage("Please select a valid (with a number) day!");
+                    }
+                } else {
+                    StartGUI.showMessage("Please select an day!");
                 }
             }
         });
@@ -690,8 +699,25 @@ public class AlphaGUI extends JFrame {
         }
         
         // Events write
+        loadDay( ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+            thisCalendar.getSelectedColumn() ) ).intValue(),
+            neo.get(neo.MONTH),neo.get(neo.YEAR) );
+        if(eventDay != null) {
+            for(int i = 0; i < eventDay.length; i++) {
+                String free = ""; 
+                if(Boolean.parseBoolean(eventDay[i][4] ) )
+                    free = "Free";
+                else
+                    free = "Busy";
+                table.setValueAt(free,Integer.parseInt(eventDay[i][3]), 1);
+            }
+        }
     }
-
+    
+    public void loadDay(int day, int month, int year) {
+        eventDay = my.dayQuery(Runner.idNo, month, day, year);
+    }
+    
     // sets an Appointment with the name inputted on the text field, 
     // and the time selected with the combo box
     public void setAppointment(JTable table, JComboBox start, JComboBox end, JTextField event) {

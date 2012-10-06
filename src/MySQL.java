@@ -308,7 +308,7 @@ public class MySQL {
                 for(int j = 0; j < rowCount; j++) {
                     arr[j] = rs.getInt(1) + " " + rs.getInt(2) + " "
                             + rs.getString(3) + " " + rs.getString(4);
-                    out.println(arr[j] );
+                    out.println("dq arr[j]: " + arr[j] );
                     rs.next();
                 }
             } else {
@@ -319,13 +319,36 @@ public class MySQL {
         return arr;
     }
     
-    public String[][] calendarDSQuery(int member) {
-        String[][] arr = null;
+    public String[][] dayQuery(int id, int month, int day, int year) {
+        System.out.println(id + " " + month + " " + day + " " + year);
+        String[][] ret = null;
+        String query = "SELECT dayOfMon, month, year, timeBlock, free" 
+                + " FROM EventData WHERE UserID = ? AND month = ?" 
+                + " AND dayOfMon = ? AND year = ? ORDER BY timeBlock";
+        String arr[] = {""+id,""+month,""+day,""+year};
+        prepare(arr, query, true);
         try {
-            
-        } catch(Exception e) {
-            
+            int rowCount = getRowCount(rs);
+            if(rowCount > 0) {
+                ret = new String[rowCount][5];
+                rs.next();
+                for(int j = 0; j < rowCount; j++) {
+                    for(int i = 1; i <= 5; i++) {
+                        if (i < 5) {
+                            ret[j][i - 1] = "" + rs.getInt(i);
+                        } else {
+                            ret[j][i - 1] = "" + rs.getBoolean(i);
+                        }
+                    }
+                    rs.next();
+                }
+            }
+            else {
+                out.println("dayQuery: No result");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return arr;
+        return ret;
     }
 }
