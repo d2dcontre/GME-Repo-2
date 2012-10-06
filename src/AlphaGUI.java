@@ -84,7 +84,8 @@ public class AlphaGUI extends JFrame {
         modifyFrame();
 
         final JTabbedPane MainTabs = new JTabbedPane(JTabbedPane.TOP);
-        MainTabs.setFont(new Font("Calibri", MainTabs.getFont().getStyle(), MainTabs.getFont().getSize()));
+        MainTabs.setFont(new Font("Calibri", MainTabs.getFont().getStyle(), 
+                MainTabs.getFont().getSize()));
         MainTabs.setBounds(0, 0, 781, 564);
         contentPane.add(MainTabs);
         
@@ -209,11 +210,13 @@ public class AlphaGUI extends JFrame {
                 {"8:30-9:00", " ", " ", " ", " ", " ", " ", " "},
             },
             new String[] {
-                "Time", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+                "Time", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", 
+                "Friday", "Saturday"
             }
         ) {
             Class[] columnTypes = new Class[] {
-                String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class
+                String.class, String.class, String.class, String.class, 
+                String.class, String.class, String.class, String.class
             };
             public Class getColumnClass(int columnIndex) {
                 return columnTypes[columnIndex];
@@ -254,7 +257,8 @@ public class AlphaGUI extends JFrame {
     // Builds the calendar tab
     public void buildCalendar(JTabbedPane MainTabs) {
         // Build Tab
-        thisMonth = new JPanel(new CardLayout(0,0)); //tab for This Month with a card layout
+        thisMonth = new JPanel(new CardLayout(0,0)); //tab for This Month with 
+                                                     //a card layout
         MainTabs.addTab("Calendar\r\n", null, thisMonth, null);
         MainTabs.setEnabledAt(1, true);
         
@@ -283,7 +287,8 @@ public class AlphaGUI extends JFrame {
                 {null, null, null, null, null, null, null},
             },
             new String[] {
-                "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+                "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
+                    , "Saturday"
             }
         ));
         thisCalendar.getColumnModel().getColumn(0).setPreferredWidth(150);
@@ -297,7 +302,8 @@ public class AlphaGUI extends JFrame {
         thisCalendar.setRowHeight(40);
         
         // Adds an edit button that will allow the user to edit a day's schedule
-        thisEditButton = new JButton("Edit"); //button for going to the 2nd panel of the card layout w/editing available
+        thisEditButton = new JButton("Edit"); //button for going to the 2nd 
+                                 //panel of the card layout w/editing available
         thisEditButton.setBounds(563, 207, 89, 23);
         thisPanel1.add(thisEditButton);
         
@@ -305,10 +311,8 @@ public class AlphaGUI extends JFrame {
         JButton thisCheckButton = new JButton("Check");
         thisCheckButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn()) != null) {
-                    //int day = (Integer)thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn());
-                    //filename = (month + " " + day +".txt");
-                    //popCalendSched(thisCheckTable,in,filename,thisCalendar.getSelectedColumn());
+                if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                        thisCalendar.getSelectedColumn()) != null) {
                     popCalendSched(thisCheckTable,thisCalendar.getSelectedColumn() );
                 }
             }
@@ -394,7 +398,8 @@ public class AlphaGUI extends JFrame {
     
     // Builds edit screen
     public void buildEdit() {
-        thisPanel2 = new JPanel(); //2nd panel of the card layout; responsible for getting the status of the date selected in the calendar
+        thisPanel2 = new JPanel(); //2nd panel of the card layout; responsible 
+                // for getting the status of the date selected in the calendar
         thisPanel2.setLayout(null);
         thisMonth.add(thisPanel2);
 
@@ -451,7 +456,7 @@ public class AlphaGUI extends JFrame {
             }
         });
 		
-        thisSave = new JButton("Save Changes\r\n");							//button for saving changes
+        thisSave = new JButton("Save Changes\r\n"); //button for saving changes
         thisSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 editCalendSched(thisSchedTable, pr, filename);
@@ -493,12 +498,25 @@ public class AlphaGUI extends JFrame {
         thisPanel2.add(lblEnd);
 
         thisStart = new JComboBox();
-        thisStart.setModel(new DefaultComboBoxModel(new String[] {"7:00", "7:30", "8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"}));
+        thisStart.setModel(new DefaultComboBoxModel(
+            new String[] {"7:00", "7:30", "8:00", "8:30", "9:00", "9:30", 
+                "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", 
+                "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", 
+                "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", 
+                "20:30"
+            })
+        );
         thisStart.setBounds(65, 366, 61, 20);
         thisPanel2.add(thisStart);
 
         thisEnd = new JComboBox();
-        thisEnd.setModel(new DefaultComboBoxModel(new String[] {"7:30", "8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"}));
+        thisEnd.setModel(new DefaultComboBoxModel(
+            new String[] {"7:30", "8:00", "8:30", "9:00", "9:30", "10:00", 
+                "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", 
+                "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", 
+                "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", 
+                "21:00"})
+            );
         thisEnd.setBounds(145, 366, 61, 20);
         thisPanel2.add(thisEnd);
 
@@ -577,20 +595,23 @@ public class AlphaGUI extends JFrame {
     // Handles actions triggered by clicking the edit button
     private class editAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn()) != null)
+            if(thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                thisCalendar.getSelectedColumn()) != null)
             {
-                int day = (Integer)thisCalendar.getValueAt(thisCalendar.getSelectedRow(),thisCalendar.getSelectedColumn());
+                int day = (Integer)thisCalendar.getValueAt(
+                    thisCalendar.getSelectedRow(),
+                    thisCalendar.getSelectedColumn()
+                );
                 sample = (CardLayout) thisMonth.getLayout();
                 sample.next(thisMonth);
                 thisDate.setText("DATE: "  + month + " " + day);
                 filename = (month + " " + day +".txt");
-                //popCalendSched(thisSchedTable,in,filename,thisCalendar.getSelectedColumn());
-                popCalendSched(thisSchedTable,thisCalendar.getSelectedColumn() );
+                popCalendSched(thisSchedTable,thisCalendar.getSelectedColumn());
             }
         }
     }
 
-    //saves the changes in the daily Sched
+    // saves the changes in the daily Sched
     public void editDaily(JTable table,PrintWriter print) {
         try
         {
@@ -606,11 +627,11 @@ public class AlphaGUI extends JFrame {
                 System.out.print(table.getValueAt(i, j).toString());
                 if(table.getValueAt(i, j).toString() != " ")
                 {
-                        print.write(table.getValueAt(i, j).toString()+ " ");
+                    print.write(table.getValueAt(i, j).toString()+ " ");
                 }
                 else
                 {
-                        print.write("^^&* ");
+                    print.write("^^&* ");
                 }
             }
             print.write("\n");
@@ -619,9 +640,8 @@ public class AlphaGUI extends JFrame {
         print.flush();
     }
 	
-    //populates the dailySched with the times in the text file
+    // populates the dailySched with the times in the text file
     public void popDaily(JTable table) {
-        //String[] dailyClasses = my.
         if(classSched != null) {
             for(int i = 0; i < classSched.length; i++) {
                 String[] temp = classSched[i].split(" ");
@@ -643,35 +663,10 @@ public class AlphaGUI extends JFrame {
                 }
             }
         }
-        
-        //<editor-fold defaultstate="collapsed" desc="Old Println Style">
-        /*try {
-         * Scanner reading = new Scanner(new FileReader("Daily Schedule.txt") ); // Load file
-         * int limit = Integer.parseInt(reading.nextLine() ); // read whole line, first line is number of classes
-         * // each row below: startTime endTime className 0(Mon) 1(Tue) 2(Wed) 3(Thu) 4(Fri) 5(Sat)
-         * for(int i = 0; i < limit; i++) {
-         *  String[] temp = reading.nextLine().split(" ");
-         *  int begin = Integer.parseInt(temp[0] );
-         *  int end = Integer.parseInt(temp[1] );
-         *  String name = temp[2];
-         *  int days = temp.length - 3;
-         *      for(int j = 0; j < days; j++) {
-         *          int day = Integer.parseInt(temp[j+3] ) + 1;
-         *          for(int k = begin; k <= end; k++) {
-         *              dailySchedTable.setValueAt(name, k, day);
-         *          }
-         *      }
-         * }
-         * }
-         * catch(Exception e) {
-         * System.out.println("Exception");
-         * e.printStackTrace();
-         * }*/
-        //</editor-fold>
     }
 			
-    //saves the changes in the Schedule of the selected day of the Calendar
-    public void editCalendSched(JTable table, PrintWriter print, String filename ) {
+    // saves the changes in the Schedule of the selected day of the Calendar
+    public void editCalendSched(JTable table,PrintWriter print,String filename) {
         try
         {
             print = new PrintWriter(filename);
@@ -687,45 +682,30 @@ public class AlphaGUI extends JFrame {
         print.flush();
     }
 
-    //populates the Schedule of the Selected day on the Calendar
+    // populates the Schedule of the Selected day on the Calendar
     public void popCalendSched(JTable table, int day) {
+        // Daily schedule write
         for(int i = 0; i < 28; i++) {
             table.setValueAt(dailySchedTable.getValueAt(i,day+1),i,1);
         }
+        
+        // Events write
     }
-    //<editor-fold defaultstate="collapsed" desc="Old popCalendSched method">
-    /*public void popCalendSched(JTable table, Scanner scan, String filename,int date) {
-        try {
-            in = new Scanner(new FileReader(filename) ); // Load file
-            for(int i = 0; i < 28; i++) 
-            {
-                String temp = in.next();
-                table.setValueAt(temp, i, 1);
-            }
-        }
-        catch(Exception e) 
-        {
-            for(int i = 0; i <28; i++)
-            {
-                table.setValueAt(dailySchedTable.getValueAt(i, date), i, 1);
-            }
-            System.out.println("Exception");
-            e.printStackTrace();
-        }
-    }*/
-    //</editor-fold>
 
-    //sets an Appointment with the name inputted on the text field, and the time selected with the combo box
+    // sets an Appointment with the name inputted on the text field, 
+    // and the time selected with the combo box
     public void setAppointment(JTable table, JComboBox start, JComboBox end, JTextField event) {
         int go = 1;
-        for(int j = start.getSelectedIndex(); j <= end.getSelectedIndex(); j++)
+        int begin = start.getSelectedIndex();
+        int finish = end.getSelectedIndex();
+        for(int j = begin; j <= finish; j++)
         {
             if(table.getValueAt(j, 1).toString() != "Free" )
                 go = 0;
         }
         if(go == 1)
         {
-            for(int i = start.getSelectedIndex(); i <= end.getSelectedIndex(); i++)
+            for(int i = begin; i <= finish; i++)
             {
                 System.out.print(i + " " + end.getSelectedIndex());
                 table.setValueAt(event.getText(), i, 1);
@@ -733,7 +713,7 @@ public class AlphaGUI extends JFrame {
         }
     }
 
-    //sets the selected rows to busy
+    // sets the selected rows to busy
     public void mark(JTable table) {
         int[]index = table.getSelectedRows();
         for(int i = 0; i < index.length;i++)
@@ -742,7 +722,7 @@ public class AlphaGUI extends JFrame {
         }
     }
 
-    //sets the selected Rows to Free
+    // sets the selected Rows to Free
     public void free(JTable table) {
         int[]index = table.getSelectedRows();
         for(int i = 0; i < index.length;i++)
@@ -793,8 +773,9 @@ public class AlphaGUI extends JFrame {
             month = "December";
             break;
         }
-        for(int i = 0; i < 7; i++) { // sets the top and bottom of the calendar to null
-                                     // allows repaint to occur with new values
+        for(int i = 0; i < 7; i++) { // sets the top and bottom of the calendar 
+                                     // to null allows repaint to occur with 
+                                     // new values
             for(int j = 0; j < 6; j++) {
                 thisCalendar.setValueAt(null, j, i);
             }
