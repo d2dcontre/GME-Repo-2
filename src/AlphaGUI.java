@@ -322,7 +322,7 @@ public class AlphaGUI extends JFrame {
                         StartGUI.showMessage("Please select a valid (with a number) day!");
                     }
                 } else {
-                    StartGUI.showMessage("Please select an day!");
+                    StartGUI.showMessage("Please select a day!");
                 }
             }
         });
