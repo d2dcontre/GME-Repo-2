@@ -50,6 +50,18 @@ create table EventData(
 	foreign key (UserID) references UserData(id)
 );
 
+create table AppData(
+	appID int not null primary key auto_increment,
+	dayOfMon int,
+	month int,
+	year int,
+	name varchar(255),
+	timeStart int,
+	noBlocks int,
+	GroupID int not null,
+	foreign key (GroupID) references GroupData(GroupID)
+);
+
 insert into IdData(id,name)
 values (102485,'Jonathan Matias');
 insert into IdData(id,name)
@@ -93,7 +105,8 @@ values (7,9,"PH101","2 4",102485);
 insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
 values (13,15,"TH131","2 4",102485);
 
-/**/
+insert into AppData(dayOfMon,month,year,name,timeStart,noBlocks,GroupID)
+values(21,9,2012,'Group Meeting',6,3,1);
 
 #delete from IdData where id = 100100;
 #delete from UserData where id = 100100;

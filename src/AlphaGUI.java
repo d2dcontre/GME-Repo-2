@@ -53,8 +53,10 @@ public class AlphaGUI extends JFrame {
     private JLabel thisLabel;
     private JButton nextMonth;
     private JButton btnPreviousMonth;
+    public int groupID;
     private String[] classSched;
     private String[][] eventDay;
+    private String[][] appDay;
     
     //<editor-fold defaultstate="collapsed" desc="void main">
     /*public static void main(String[] args) {
@@ -712,8 +714,23 @@ public class AlphaGUI extends JFrame {
                 table.setValueAt(free,Integer.parseInt(eventDay[i][3]), 1);
             }
         }
+        
+        // Group events write
+        appDay = my.appQuery(neo.get(neo.MONTH), ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+            thisCalendar.getSelectedColumn() ) ).intValue(), neo.get(neo.YEAR), groupID);
+        if(appDay != null) {
+            System.out.println("appDay length: " + appDay.length);
+            for(int i = 0; i < appDay.length; i++) {
+                int run = Integer.parseInt(appDay[i][5] );
+                System.out.println("run: " + run);
+                for(int j = 0; j < run; j++) {
+                    table.setValueAt(appDay[i][3], Integer.parseInt(appDay[i][4] )+j, 1);
+                }
+            }
+        }
     }
     
+    // Simply loads all of the personal events for the day
     public void loadDay(int day, int month, int year) {
         eventDay = my.dayQuery(Runner.idNo, month, day, year);
     }
@@ -726,7 +743,9 @@ public class AlphaGUI extends JFrame {
         int finish = end.getSelectedIndex();
         for(int j = begin; j <= finish; j++)
         {
-            if(table.getValueAt(j, 1).toString() != "Free" )
+            //System.out.println("setAppoint j, 1: \"" + table.getValueAt(j, 1).toString() + "\"");
+            if(!table.getValueAt(j, 1).toString().equals("Free") 
+                    && !table.getValueAt(j, 1).toString().equals(" ") )
                 go = 0;
         }
         if(go == 1)
@@ -736,6 +755,14 @@ public class AlphaGUI extends JFrame {
                 System.out.print(i + " " + end.getSelectedIndex());
                 table.setValueAt(event.getText(), i, 1);
             }
+            my.appUpdate( 
+                ( (Integer) 
+                    thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                    thisCalendar.getSelectedColumn() ) 
+                ).intValue(), 
+                neo.get(neo.MONTH), neo.get(neo.YEAR), event.getText(), begin, 
+                finish-begin + 1, groupID
+            );
         }
     }
 

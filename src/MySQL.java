@@ -263,6 +263,7 @@ public class MySQL {
         } catch(Exception e) {
             e.printStackTrace();
         }
+        microClose();
         return check;
     }
     
@@ -346,6 +347,7 @@ public class MySQL {
         } catch (SQLException sQLException) {
             sQLException.printStackTrace();
         }
+        microClose();
         return arr;
     }
     
@@ -379,6 +381,45 @@ public class MySQL {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        microClose();
         return ret;
+    }
+    
+    public String[][] appQuery(int month, int day, int year, int groupid) {
+        String[][] ret = null;
+        String query = "SELECT dayOfMon, month, year, name, timeStart, noBlocks FROM "
+                + "AppData WHERE month = ? AND dayOfMon = ? AND year = ? AND GroupID = ? "
+                + "ORDER BY timeStart";
+        String arr[] = {""+month,""+day,""+year,""+groupid};
+        prepare(arr, query, true);
+        try {
+            int rowCount = getRowCount(rs);
+            if(rowCount > 0) {
+                ret = new String[rowCount][6];
+                rs.next();
+                for(int i = 0; i < rowCount; i++) {
+                    for(int j = 1; j <= 6; j++) {
+                        if(j != 4)
+                            ret[i][j-1] = "" + rs.getInt(j);
+                        else
+                            ret[i][j-1] = rs.getString(j);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        microClose();
+        return ret;
+    }
+    
+    public int appUpdate(int dayOfMon, int month, int year, String name,
+            int timeStart, int noBlocks, int GroupID) {
+        rowRet = -1;
+        String update = "INSERT INTO AppData(dayOfMon,month,year,name,timeStart,noBlocks,GroupID) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?)";
+        String arr[] = {""+dayOfMon,""+month,""+year,name,""+timeStart,""+noBlocks,""+GroupID};
+        prepare(arr, update, false);
+        return rowRet;
     }
 }

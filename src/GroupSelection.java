@@ -262,6 +262,7 @@ public class GroupSelection extends javax.swing.JFrame {
         if(selected) {
             AlphaGUI ag = new AlphaGUI(my);
             ag.setVisible(true);
+            ag.groupID = Integer.parseInt(GroupNo.getText() );
         }
         else {
             StartGUI.showMessage("Select a Group First!");
