@@ -105,6 +105,28 @@ values (7,9,"PH101","2 4",102485);
 insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
 values (13,15,"TH131","2 4",102485);
 
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (5,6,"TH131","1 3 5",100651);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (13,14,"MIS181.8","1 3 5",100651);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (15,18,"CS152","1 3 5",100651);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (7,9,"PH101","2 4",100651);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (13,15,"TH131","2 4",100651);
+
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (5,6,"TH131","1 3 5",102269);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (13,14,"MIS181.8","1 3 5",102269);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (15,18,"CS152","1 3 5",102269);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (7,9,"PH101","2 4",102269);
+insert into UserSched(classStart,classEnd,className,dayOfWeek,userID)
+values (13,15,"TH131","2 4",102269);
+
 insert into AppData(dayOfMon,month,year,name,timeStart,noBlocks,GroupID)
 values(21,9,2012,'Group Meeting',6,3,1);
 

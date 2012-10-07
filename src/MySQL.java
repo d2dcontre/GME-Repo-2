@@ -493,4 +493,11 @@ public class MySQL {
         String arr[] = {""+day,""+month,""+year,""+block,""+freeC,""+userid};
         prepare(arr, update, false);
     }
+    
+    public void dailyUpdate(int start, int end, String name, String dayOfWeek, int UserID) {
+        String update = "insert into UserSched(classStart,classEnd,className,dayOfWeek,UserID) "
+        + "values (?, ?, ?, ?, ?)";
+        String arr[] = {""+start,""+end, name, dayOfWeek, ""+UserID};
+        prepare(arr, update, false);
+    }
 }

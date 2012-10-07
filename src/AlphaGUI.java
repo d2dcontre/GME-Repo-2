@@ -8,12 +8,14 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.Stack;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -189,7 +191,7 @@ public class AlphaGUI extends JFrame {
             new Object[][] {
                 {"7:00-7:30", " ", " ", " ", " ", " ", " ", " "},
                 {"7:30-8:00", " ", " ", " ", " ", " ", " ", " "},
-                {"8:00-8:30", "  ", " ", " ", " ", " ", " ", " "},
+                {"8:00-8:30", " ", " ", " ", " ", " ", " ", " "},
                 {"8:30-9:00", " ", " ", " ", " ", " ", " ", " "},
                 {"9:00-9:30", " ", " ", " ", " ", " ", " ", " "},
                 {"9:30-10:00", " ", " ", " ", " ", " ", " ", " "},
@@ -253,12 +255,12 @@ public class AlphaGUI extends JFrame {
             public void actionPerformed(ActionEvent arg0)
             {
                 // Updating the DB
-                editDaily(dailySchedTable, pr);
+                editDaily(dailySchedTable);
             }
         });
         dailySchedSave.setFont(new Font("Calibri", Font.PLAIN, 11));
         dailySchedSave.setBounds(302, 485, 170, 28);
-        //Appraisal.add(dailySchedSave);
+        Appraisal.add(dailySchedSave);
     }
     
     // Builds the calendar tab
@@ -642,8 +644,38 @@ public class AlphaGUI extends JFrame {
     }
     
     // saves the changes in the daily Sched
-    public void editDaily(JTable table,PrintWriter print) {
-        try
+    public void editDaily(JTable table) {
+        int confirmed = -1;
+        confirmed = JOptionPane.showConfirmDialog(null, "Are you sure?", "ATTENTION!", JOptionPane.OK_CANCEL_OPTION);
+        if(confirmed == 0) {
+            for (int i = 1; i < table.getColumnCount(); i++) {
+                for (int j = 0; j < table.getRowCount(); j++) {
+                    System.out.println("editDaily i,j: " + i + " " + j);
+                    String store = table.getValueAt(j, i).toString();
+                    if (store.equals("") || store.equals(" ")) {
+                    } else {
+                        int start = j;
+                        int blockSize = 0;
+                        for (int k = j + 1; k < table.getRowCount(); k++) {
+                            String temp = table.getValueAt(k, i).toString();
+                            System.out.println(temp + " " + store);
+                            if (temp.equals(store)) {
+                                blockSize++;
+                            } else {
+                                j = k - 1;
+                                break;
+                            }
+                        }
+                        System.out.println("blockSize: " + blockSize);
+                        int end = start + blockSize;
+                        store = store.replace(" ", "");
+                        // user id, int start, int end, string name, string dayOfWeek, int user id
+                        my.dailyUpdate(start, end, store, "" + (i - 1), Runner.idNo);
+                    }
+                }
+            }
+        }
+        /*try
         {
             print = new PrintWriter("Daily Schedule.txt");
         }
@@ -667,13 +699,14 @@ public class AlphaGUI extends JFrame {
             print.write("\n");
             System.out.print("\n");
         }
-        print.flush();
+        print.flush();*/
     }
 	
     // populates the dailySched with the times in the text file
     public void popDaily(JTable table) {
         if(classSched != null) {
             for(int i = 0; i < classSched.length; i++) {
+                System.out.println("classSched: " + classSched[i] );
                 String[] temp = classSched[i].split(" ");
                 /*for(int k = 0; k < temp.length; k++) {
                     System.out.print(temp[k] + " ");
@@ -961,53 +994,64 @@ public class AlphaGUI extends JFrame {
     // sets an Appointment with the name inputted on the text field, 
     // and the time selected with the combo box
     public void setAppointment(JTable table, JComboBox start, JComboBox end, JTextField event) {
-        int go = 1;
-        int begin = start.getSelectedIndex();
-        int finish = end.getSelectedIndex();
-        for(int j = begin; j <= finish; j++)
-        {
-            //System.out.println("setAppoint j, 1: \"" + table.getValueAt(j, 1).toString() + "\"");
-            if(!table.getValueAt(j, 1).toString().equals("Free") 
-                    && !table.getValueAt(j, 1).toString().equals(" ") )
-                go = 0;
-        }
-        if(go == 1)
-        {
-            for(int i = begin; i <= finish; i++)
-            {
-                //System.out.print(i + " " + end.getSelectedIndex());
-                table.setValueAt(event.getText(), i, 1);
+        int confirmed = -1;
+        confirmed = JOptionPane.showConfirmDialog(null, "Are you sure?", "ATTENTION!", JOptionPane.OK_CANCEL_OPTION);
+        if(confirmed == 0) {
+            int go = 1;
+            int begin = start.getSelectedIndex();
+            int finish = end.getSelectedIndex();
+            for (int j = begin; j <= finish; j++) {
+                //System.out.println("setAppoint j, 1: \"" + table.getValueAt(j, 1).toString() + "\"");
+                if (!table.getValueAt(j, 1).toString().equals("Free")
+                        && !table.getValueAt(j, 1).toString().equals(" ")) {
+                    go = 0;
+                }
             }
-            my.appUpdate( 
-                ( (Integer) 
-                    thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
-                    thisCalendar.getSelectedColumn() ) 
-                ).intValue(), 
-                neo.get(neo.MONTH), neo.get(neo.YEAR), event.getText(), begin, 
-                finish-begin + 1, groupID
-            );
+            if (go == 1 && begin < finish) {
+                for (int i = begin; i <= finish; i++) {
+                    //System.out.print(i + " " + end.getSelectedIndex());
+                    table.setValueAt(event.getText(), i, 1);
+                }
+                my.appUpdate(
+                        ((Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                        thisCalendar.getSelectedColumn())).intValue(),
+                        neo.get(neo.MONTH), neo.get(neo.YEAR), event.getText(), begin,
+                        finish - begin + 1, groupID);
+                bigCheck();
+            } else {
+                StartGUI.showMessage("Please select a proper time frame.\n(Start has to be less than the end).");                
+            }
         }
     }
 
     // sets the selected rows to busy
     public void mark(JTable table) {
-        int[]index = table.getSelectedRows();
-        for(int i = 0; i < index.length;i++)
-        {
-            table.setValueAt("Busy",index[i],1);
-            my.markBusyFree( ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
-            thisCalendar.getSelectedColumn() ) ).intValue(), neo.get(neo.MONTH), neo.get(neo.YEAR), index[i], false, Runner.idNo);
+        int confirmed = -1;
+        confirmed = JOptionPane.showConfirmDialog(null, "Are you sure?", "ATTENTION!", JOptionPane.OK_CANCEL_OPTION);
+        if(confirmed == 0) {
+            int[]index = table.getSelectedRows();
+            for(int i = 0; i < index.length;i++)
+            {
+                table.setValueAt("Busy",index[i],1);
+                my.markBusyFree( ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                thisCalendar.getSelectedColumn() ) ).intValue(), neo.get(neo.MONTH), neo.get(neo.YEAR), index[i], false, Runner.idNo);
+            }
+            bigCheck();
         }
     }
 
     // sets the selected Rows to Free
     public void free(JTable table) {
-        int[]index = table.getSelectedRows();
-        for(int i = 0; i < index.length;i++)
-        {
-            table.setValueAt("Free",index[i],1);
-            my.markBusyFree( ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
-            thisCalendar.getSelectedColumn() ) ).intValue(), neo.get(neo.MONTH), neo.get(neo.YEAR), index[i], true, Runner.idNo);
+        int confirmed = -1;
+        confirmed = JOptionPane.showConfirmDialog(null, "Are you sure?", "ATTENTION!", JOptionPane.OK_CANCEL_OPTION);
+        if(confirmed == 0) {
+            int[] index = table.getSelectedRows();
+            for (int i = 0; i < index.length; i++) {
+                table.setValueAt("Free", index[i], 1);
+                my.markBusyFree(((Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                        thisCalendar.getSelectedColumn())).intValue(), neo.get(neo.MONTH), neo.get(neo.YEAR), index[i], true, Runner.idNo);
+            }
+            bigCheck();
         }
     }
     
