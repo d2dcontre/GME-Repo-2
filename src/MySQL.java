@@ -199,6 +199,31 @@ public class MySQL {
         return rowRet;
     }
     
+    public int[] memberIDQuery(int groupid) {
+        int[] ret = null;
+        String query = "select IdData.id from IdData " +
+        "join GroupPerson on GroupPerson.UserID = IdData.id " +
+        "join GroupData on GroupData.GroupID = GroupPerson.GroupID " +
+        "where GroupData.GroupID = ?";
+        String arr[] = {""+groupid};
+        prepare(arr, query, true);
+        int rowCount = getRowCount(rs);
+        try {
+            if(rowCount > 0) {
+                out.println("Members found and being stored");
+                ret = new int[rowCount];
+                int i = 0;
+                while(rs.next() ) {
+                    ret[i] = rs.getInt("id");
+                    i++;
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
+    
     // Returns all of the members of a particular group
     public String[] memberQuery(int groupid) {
         String[] gMembers = null;
@@ -340,6 +365,39 @@ public class MySQL {
                     arr[j] = rs.getInt(1) + " " + rs.getInt(2) + " "
                             + rs.getString(3) + " " + rs.getString(4);
                     out.println("dq arr[j]: " + arr[j] );
+                    rs.next();
+                }
+            } else {
+            }
+        } catch (SQLException sQLException) {
+            sQLException.printStackTrace();
+        }
+        microClose();
+        return arr;
+    }
+    
+    public String[][] dailyQuery2(int id) {
+        String arr[][] = null; // Int-start Int-end String-name daysOfWeek{"1 3 5"}
+        String query = "SELECT classStart, classEnd, className, dayOfWeek FROM UserSched WHERE UserID = ?";
+        String temp[] = {""+id};
+        prepare(temp, query, true);
+        try {
+            int rowCount = getRowCount(rs);
+            out.println("DQ rowCount: " + rowCount);
+            if (rowCount > 0) {
+                arr = new String[rowCount][4];
+                rs.next();
+                for(int j = 0; j < rowCount; j++) {
+                    /*arr[j] = rs.getInt(1) + " " + rs.getInt(2) + " "
+                            + rs.getString(3) + " " + rs.getString(4);*/
+                    for(int i = 0; i < 4; i++) {
+                        if(i < 2)
+                            arr[j][i] = "" + rs.getInt(i+1);
+                        else
+                            arr[j][i] = "" + rs.getString(i+1);
+                    }
+                            
+                    //out.println("dq arr[j]: " + arr[j] );
                     rs.next();
                 }
             } else {

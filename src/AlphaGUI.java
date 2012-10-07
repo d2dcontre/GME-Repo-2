@@ -5,8 +5,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Stack;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -16,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -57,6 +60,7 @@ public class AlphaGUI extends JFrame {
     private String[] classSched;
     private String[][] eventDay;
     private String[][] appDay;
+    private JTextArea freelist;
     
     //<editor-fold defaultstate="collapsed" desc="void main">
     /*public static void main(String[] args) {
@@ -108,7 +112,7 @@ public class AlphaGUI extends JFrame {
         neo.setLenient(true); // changes date overflow to equivalent month
         neo = Calendar.getInstance();	// get local time
         currMonth = neo.get(neo.MONTH);
-        System.out.println(currMonth);
+        //System.out.println(currMonth);
         switch(currMonth) {
         case 0:
             month = "January";
@@ -475,11 +479,17 @@ public class AlphaGUI extends JFrame {
         });
         thisSave.setFont(new Font("Calibri", Font.PLAIN, 11));
         thisSave.setBounds(284, 444, 170, 28);
-        thisPanel2.add(thisSave);	
+        //thisPanel2.add(thisSave);	
         thisFree = new JLabel("The Free times are:");
         thisFree.setVerticalAlignment(SwingConstants.TOP);
-        thisFree.setBounds(40, 170, 111, 91);
-        //thisPanel2.add(thisFree);
+        thisFree.setBounds(40, 40, 111, 91);
+        thisPanel2.add(thisFree);
+        
+        freelist = new JTextArea();
+        JScrollPane temp = new JScrollPane();
+        temp.setViewportView(freelist);
+        temp.setBounds(40,80,140,180);
+        thisPanel2.add(temp);
 		
         JButton thisRetBtn = new JButton("Return\r\n");
         thisRetBtn.addActionListener(new ActionListener() {
@@ -620,6 +630,7 @@ public class AlphaGUI extends JFrame {
                     thisDate.setText("DATE: "  + month + " " + day);
                     filename = (month + " " + day +".txt");
                     popCalendSched(thisSchedTable,thisCalendar.getSelectedColumn());
+                    bigCheck();
                 }
                 else {
                     StartGUI.showMessage("Please select a valid (with a number) day!");
@@ -664,18 +675,18 @@ public class AlphaGUI extends JFrame {
         if(classSched != null) {
             for(int i = 0; i < classSched.length; i++) {
                 String[] temp = classSched[i].split(" ");
-                for(int k = 0; k < temp.length; k++) {
+                /*for(int k = 0; k < temp.length; k++) {
                     System.out.print(temp[k] + " ");
-                }
-                System.out.println();
+                }*/
+                //System.out.println();
                 int begin = Integer.parseInt(temp[0] );
                 int end = Integer.parseInt(temp[1] );
-                System.out.println("begin: " + begin + ", end: " + end);
+                //System.out.println("begin: " + begin + ", end: " + end);
                 String name = temp[2];
                 int days = temp.length - 3;
                 for(int j = 0; j < days; j++) {
                     int day = Integer.parseInt(temp[j+3] ) + 1;
-                    System.out.println("Day: " + day);
+                    //System.out.println("Day: " + day);
                     for(int k = begin; k <= end; k++) {
                         dailySchedTable.setValueAt(name, k, day);
                     }
@@ -727,16 +738,219 @@ public class AlphaGUI extends JFrame {
         appDay = my.appQuery(neo.get(neo.MONTH), ( (Integer) thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
             thisCalendar.getSelectedColumn() ) ).intValue(), neo.get(neo.YEAR), groupID);
         if(appDay != null) {
-            System.out.println("appDay length: " + appDay.length);
+            //System.out.println("appDay length: " + appDay.length);
             for(int i = 0; i < appDay.length; i++) {
                 int run = Integer.parseInt(appDay[i][5] );
-                System.out.println("run: " + run);
+                //System.out.println("run: " + run);
                 for(int j = 0; j < run; j++) {
-                    System.out.println("appDay: " + appDay[i][4]);
+                    //System.out.println("appDay: " + appDay[i][4]);
                     table.setValueAt(appDay[i][3], Integer.parseInt(appDay[i][4] )+j, 1);
                 }
             }
         }
+    }
+    
+    public void bigCheck() {
+        int[] memberID = my.memberIDQuery(groupID);
+        /*for(int i = 0; i < memberID.length; i++)
+            System.out.print(memberID[i] + " ");
+        System.out.println();*/
+        //ArrayList<String[][]>[] al = new ArrayList<String[][]>[memberID.length];
+        ArrayList[] al = new ArrayList[memberID.length];
+        for(int i = 0; i < memberID.length; i++) {
+            al[i] = new ArrayList<String[][]>();
+            al[i].add(my.dailyQuery2(memberID[i]) );
+            al[i].add(my.dayQuery(memberID[i], neo.get(neo.MONTH), 
+                ( (Integer) 
+                    thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                    thisCalendar.getSelectedColumn() ) 
+                ).intValue(), neo.get(neo.YEAR) 
+            ) );
+            al[i].add(my.appQuery(neo.get(neo.MONTH), ( (Integer) 
+                    thisCalendar.getValueAt(thisCalendar.getSelectedRow(),
+                    thisCalendar.getSelectedColumn() ) 
+                ).intValue(), neo.get(neo.YEAR), groupID) );
+        }
+        
+        String[][] magic = new String[28][101];
+        for(int i = 0; i < magic.length; i++) {
+            magic[i][0] = i+"";
+        }
+        for(int i = 0; i < al.length; i++) { // loop through members
+            System.out.println("i: " + i);
+            for(int j = 0; j < al[i].size(); j++) { // loop through array list
+                System.out.println("j: " + j);
+                String[][] ngye = ((String[][]) al[i].get(j) );
+                if(ngye == null)
+                    continue;
+                if(j == 0) { // if daily sched
+                    for(int k = 0; k < ngye.length; k++) { // loops through class list
+                        String daily = ngye[k][3];
+                        if(daily.contains("" + thisCalendar.getSelectedColumn() ) ) {
+                            int start = Integer.parseInt(ngye[k][0] );
+                            int end = Integer.parseInt(ngye[k][1] );
+                            for(int h = start; h <= end; h++) {
+                                for(int g = 1; g < magic[h].length; g++) {
+                                    if(magic[h][g] == null) {
+                                        magic[h][g] = "" + memberID[i];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if(j == 1) { // personal events
+                    for(int k = 0; k < ngye.length; k++) { // loops through event list
+                        int time = Integer.parseInt(ngye[k][3] );
+                        System.out.println("time: " + time + ", " + ngye[k][4] );
+                        if(ngye[k][4].equalsIgnoreCase("true") ) {
+                            for(int h = 1; h < magic[time].length; h++) {
+                                //magic[time][h] = null;
+                                if(magic[time][h] == null || magic[time][h].equals(""+memberID[i] ) ) {
+                                    magic[time][h] = null;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            for(int h = 1; h < magic[time].length; h++) {
+                                if(magic[time][h] == null) {
+                                    magic[time][h] = "" + memberID[i];
+                                    System.out.println("pe, magic: " + magic[time][h]);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    for(int k = 0; k < ngye.length; k++) {
+                        int time = Integer.parseInt(ngye[k][4] );
+                        int noBlocks = Integer.parseInt(ngye[k][5] );
+                        for(int h = 0; h < noBlocks; h++) {
+                            for(int g = 1; g < magic[time+h].length; g++) {
+                                if(magic[time+h][g] == null) {
+                                    magic[time+h][g] = "" + memberID[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /*for(int i = 0; i < magic.length; i++) {
+            for(int j = 0; j < magic[i].length; j++)
+                System.out.print(magic[i][j] + " ");
+            System.out.println();
+        }*/
+        String[][] opList = new String[28][101];
+        
+        AlgorithmFinal algo = new AlgorithmFinal();
+        Stack<String[]> output = algo.Sorter(magic);
+        /*for(int i=0; i<28;i++){
+            String[] temp = output.pop();
+            for(int ii=0;ii<temp.length;ii++){
+                System.out.print(temp[ii]+" ");		
+            }
+            System.out.println();
+        }*/
+        String hold = "";
+        for(int i = 0; i < 28; i++) {
+            String[] temp = output.pop();
+            switch(Integer.parseInt(temp[0] ) ) {
+                case 0:
+                    hold = hold + "\n7:00";
+                    break;
+                case 1:
+                    hold = hold + "\n7:30";
+                    break;
+                case 2:
+                    hold = hold + "\n8:00";
+                    break;
+                case 3:
+                    hold = hold + "\n8:30";
+                    break;
+                case 4:
+                    hold = hold + "\n9:00";
+                    break;
+                case 5:
+                    hold = hold + "\n9:30";
+                    break;
+                case 6:
+                    hold = hold + "\n10:00";
+                    break;
+                case 7:
+                    hold = hold + "\n10:30";
+                    break;
+                case 8:
+                    hold = hold + "\n11:00";
+                    break;
+                case 9:
+                    hold = hold + "\n11:30";
+                    break;
+                case 10:
+                    hold = hold + "\n12:00";
+                    break;
+                case 11:
+                    hold = hold + "\n12:30";
+                    break;
+                case 12:
+                    hold = hold + "\n13:00";
+                    break;
+                case 13:
+                    hold = hold + "\n13:30";
+                    break;
+                case 14:
+                    hold = hold + "\n14:00";
+                    break;
+                case 15:
+                    hold = hold + "\n14:30";
+                    break;
+                case 16:
+                    hold = hold + "\n15:00";
+                    break;
+                case 17:
+                    hold = hold + "\n15:30";
+                    break;
+                case 18:
+                    hold = hold + "\n16:00";
+                    break;
+                case 19:
+                    hold = hold + "\n16:30";
+                    break;
+                case 20:
+                    hold = hold + "\n17:00";
+                    break;
+                case 21:
+                    hold = hold + "\n17:30";
+                    break;
+                case 22:
+                    hold = hold + "\n18:00";
+                    break;
+                case 23:
+                    hold = hold + "\n18:30";
+                    break;
+                case 24:
+                    hold = hold + "\n19:00";
+                    break;
+                case 25:
+                    hold = hold + "\n19:30";
+                    break;
+                case 26:
+                    hold = hold + "\n20:00";
+                    break;
+                case 27:
+                    hold = hold + "\n20:30";
+                    break;
+            }
+            hold = hold + " - " + (temp.length-1) + " busy";
+        }
+        hold = hold.substring(hold.indexOf("\n")+1);
+        freelist.setText(hold);
+        freelist.setCaretPosition(0);
     }
     
     // Simply loads all of the personal events for the day
@@ -761,7 +975,7 @@ public class AlphaGUI extends JFrame {
         {
             for(int i = begin; i <= finish; i++)
             {
-                System.out.print(i + " " + end.getSelectedIndex());
+                //System.out.print(i + " " + end.getSelectedIndex());
                 table.setValueAt(event.getText(), i, 1);
             }
             my.appUpdate( 
